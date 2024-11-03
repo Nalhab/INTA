@@ -27,7 +27,26 @@ const authenticateJWT = (req, res, next) => {
         next();
     });
 };
-
+/**
+ * @swagger
+ * /api/register:
+ *   post:
+ *     summary: Register a new user
+ *     tags: [Users]
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               email:
+ *                 type: string
+ *               password:
+ *                 type: string
+ *               username:
+ *                 type: string
+**/
 // Endpoint pour enregistrer un utilisateur
 router.post(
     '/register',
@@ -62,6 +81,26 @@ router.post(
     }
 );
 
+/**
+ * @swagger
+ * /api/register:
+ *   post:
+ *     summary: Register a new user
+ *     tags: [Users]
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               email:
+ *                 type: string
+ *               password:
+ *                 type: string
+ *               username:
+ *                 type: string
+**/
 // Endpoint pour la connexion
 router.post(
     '/login',
@@ -101,6 +140,26 @@ router.post(
     }
 );
 
+/**
+ * @swagger
+ * /api/register:
+ *   post:
+ *     summary: Register a new user
+ *     tags: [Users]
+ *     requestBody:
+ *       required: true
+ *       content:
+ *         application/json:
+ *           schema:
+ *             type: object
+ *             properties:
+ *               email:
+ *                 type: string
+ *               password:
+ *                 type: string
+ *               username:
+ *                 type: string
+**/
 // Endpoint pour voir la liste des utilisateurs
 router.get('/users', async (req, res) => {
     try {
