@@ -27,6 +27,7 @@ const authenticateJWT = (req, res, next) => {
         next();
     });
 };
+
 /**
  * @swagger
  * /api/register:
@@ -47,7 +48,6 @@ const authenticateJWT = (req, res, next) => {
  *               username:
  *                 type: string
 **/
-// Endpoint pour enregistrer un utilisateur
 router.post(
     '/register',
     [
@@ -83,9 +83,9 @@ router.post(
 
 /**
  * @swagger
- * /api/register:
+ * /api/login:
  *   post:
- *     summary: Register a new user
+ *     summary: Log in an existing user
  *     tags: [Users]
  *     requestBody:
  *       required: true
@@ -98,10 +98,7 @@ router.post(
  *                 type: string
  *               password:
  *                 type: string
- *               username:
- *                 type: string
-**/
-// Endpoint pour la connexion
+ */
 router.post(
     '/login',
     [
@@ -142,25 +139,30 @@ router.post(
 
 /**
  * @swagger
- * /api/register:
- *   post:
- *     summary: Register a new user
+ * /api/users:
+ *   get:
+ *     summary: Fetch all registered users
  *     tags: [Users]
- *     requestBody:
- *       required: true
- *       content:
- *         application/json:
- *           schema:
- *             type: object
- *             properties:
- *               email:
- *                 type: string
- *               password:
- *                 type: string
- *               username:
- *                 type: string
-**/
-// Endpoint pour voir la liste des utilisateurs
+ *     responses:
+ *       200:
+ *         description: A list of users
+ *         content:
+ *           application/json:
+ *             schema:
+ *               type: array
+ *               items:
+ *                 type: object
+ *                 properties:
+ *                   id:
+ *                     type: integer
+ *                   email:
+ *                     type: string
+ *                   username:
+ *                     type: string
+ *                   created_at:
+ *                     type: string
+ *                     format: date-time
+ */
 router.get('/users', async (req, res) => {
     try {
         const result = await pool.query('SELECT id, email, username, created_at FROM users');
@@ -171,5 +173,5 @@ router.get('/users', async (req, res) => {
     }
 });
 
-module.exports = router; // Assurez-vous d'exporter le router
+module.exports = router;
 
