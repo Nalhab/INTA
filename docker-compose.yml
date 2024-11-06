@@ -1,41 +1,33 @@
-version: '3.8'
-
 services:
-  frontend:
-    build: ./frontend
-    ports:
-      - "3000:3000"
-    volumes:
-      - ./frontend:/app
-      - /app/node_modules
+  postgres:
+    image: postgres:16
     environment:
-      - REACT_APP_API_URL=http://localhost:5000/api
-    depends_on:
-      - backend
-
-  backend:
-    build: ./backend
-    ports:
-      - "5000:5000"
-    volumes:
-      - ./backend:/app
-      - /app/node_modules
-    environment:
-      - DATABASE_URL=postgresql://postgres:password@db:5432/mydatabase
-    depends_on:
-      - db
-
-  db:
-    image: postgres:14
+      POSTGRES_DB: medical_db
+      POSTGRES_USER: keycloak
+      POSTGRES_PASSWORD: password
     ports:
       - "5432:5432"
-    environment:
-      - POSTGRES_USER=postgres
-      - POSTGRES_PASSWORD=password
-      - POSTGRES_DB=mydatabase
     volumes:
-      - ./medical_db.sql:/docker-entrypoint-initdb.d/init.sql
-      - postgres_data:/var/lib/postgresql/data
+      - postgres_data:/var/lib/postgresql/data:Z
+      - ./medical_db.sql:/docker-entrypoint-initdb.d/medical_db.sql:Z
+
+  keycloak:
+    image: quay.io/keycloak/keycloak:latest
+    environment:
+      DB_VENDOR: POSTGRES
+      DB_ADDR: postgres
+      DB_DATABASE: keycloak
+      DB_USER: keycloak
+      DB_PASSWORD: password
+      KC_BOOTSTRAP_ADMIN_USERNAME: admin
+      KC_BOOTSTRAP_ADMIN_PASSWORD: admin
+    ports:
+      - "8080:8080"
+    depends_on:
+      - postgres
+    volumes:
+      - ./keycloak-config/realm-export.json:/opt/keycloak/data/import/realm-export.json:Z
+    command: ["start-dev", "--import-realm"]
 
 volumes:
   postgres_data:

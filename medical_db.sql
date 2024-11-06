@@ -1,14 +1,3 @@
--- Créer la base de données si elle n'existe pas déjà
-DO $$
-BEGIN
-    IF NOT EXISTS (SELECT FROM pg_database WHERE datname = 'medical_db') THEN
-        CREATE DATABASE medical_db;
-    END IF;
-END $$;
-
--- Basculer vers la base de données 'medical_db'
-\connect medical_db;
-
 -- 1. Création des tables de base
 CREATE TABLE IF NOT EXISTS CabinetMedical (
     id SERIAL PRIMARY KEY,
@@ -100,9 +89,6 @@ BEGIN
     IF EXISTS (SELECT FROM pg_catalog.pg_roles WHERE rolname = 'medecin') THEN
         DROP ROLE medecin;
     END IF;
-    IF EXISTS (SELECT FROM pg_catalog.pg_roles WHERE rolname = 'infirmier') THEN
-        DROP ROLE infirmier;
-    END IF;
     IF EXISTS (SELECT FROM pg_catalog.pg_roles WHERE rolname = 'secretaire') THEN
         DROP ROLE secretaire;
     END IF;
@@ -117,30 +103,12 @@ BEGIN
     IF NOT EXISTS (SELECT FROM pg_roles WHERE rolname = 'medecin') THEN
         CREATE ROLE medecin;
     END IF;
-    IF NOT EXISTS (SELECT FROM pg_roles WHERE rolname = 'infirmier') THEN
-        CREATE ROLE infirmier;
-    END IF;
     IF NOT EXISTS (SELECT FROM pg_roles WHERE rolname = 'secretaire') THEN
         CREATE ROLE secretaire;
     END IF;
 END $$;
 
--- 6. Création des utilisateurs
-DO $$
-BEGIN
-    IF NOT EXISTS (SELECT FROM pg_catalog.pg_user WHERE usename = 'admin_sys') THEN
-        CREATE USER admin_sys WITH PASSWORD 'admin123' IN ROLE admin_medical;
-    END IF;
-    IF NOT EXISTS (SELECT FROM pg_catalog.pg_user WHERE usename = 'dr_dupont') THEN
-        CREATE USER dr_dupont WITH PASSWORD 'med123' IN ROLE medecin;
-    END IF;
-    IF NOT EXISTS (SELECT FROM pg_catalog.pg_user WHERE usename = 'inf_martin') THEN
-        CREATE USER inf_martin WITH PASSWORD 'inf123' IN ROLE infirmier;
-    END IF;
-    IF NOT EXISTS (SELECT FROM pg_catalog.pg_user WHERE usename = 'sec_dubois') THEN
-        CREATE USER sec_dubois WITH PASSWORD 'sec123' IN ROLE secretaire;
-    END IF;
-END $$;
+-- 6. Création d'un utilisateur test
 
 -- 7. Attribution des droits aux rôles (Pas besoin de condition IF NOT EXISTS)
 GRANT SELECT, INSERT, UPDATE ON Patient TO medecin;
@@ -149,12 +117,6 @@ GRANT SELECT, INSERT ON CompteRendu TO medecin;
 GRANT SELECT ON DonneesDM TO medecin;
 GRANT SELECT ON DispositifMedical TO medecin;
 GRANT SELECT ON Alerte TO medecin;
-
-GRANT SELECT ON Patient TO infirmier;
-GRANT SELECT ON DossierPatient TO infirmier;
-GRANT SELECT, INSERT ON DonneesDM TO infirmier;
-GRANT SELECT ON DispositifMedical TO infirmier;
-GRANT SELECT, INSERT ON Alerte TO infirmier;
 
 GRANT SELECT, INSERT ON Patient TO secretaire;
 GRANT SELECT ON DossierPatient TO secretaire;
@@ -168,34 +130,24 @@ ALTER TABLE DonneesDM ENABLE ROW LEVEL SECURITY;
 ALTER TABLE Alerte ENABLE ROW LEVEL SECURITY;
 
 -- 9. Création des politiques de sécurité
-CREATE POLICY IF NOT EXISTS medecin_patient_access ON Patient
-    FOR ALL
-    TO medecin
-    USING (
-        id IN (
-            SELECT p.id
-            FROM Patient p
-            JOIN DossierPatient dp ON dp.patient_id = p.id
-            JOIN CompteRendu cr ON cr.dossier_id = dp.id
-            JOIN ProfessionnelSante ps ON ps.id = cr.professionnel_id
-            WHERE ps.id = CAST(current_user AS integer)
-        )
-    );
-
-CREATE POLICY IF NOT EXISTS medecin_donnees_access ON DonneesDM
-    FOR SELECT
-    TO medecin
-    USING (
-        dispositif_id IN (
-            SELECT dm.id
-            FROM DispositifMedical dm
-            JOIN Patient p ON p.id = dm.patient_id
-            JOIN DossierPatient dp ON dp.patient_id = p.id
-            JOIN CompteRendu cr ON cr.dossier_id = dp.id
-            JOIN ProfessionnelSante ps ON ps.id = cr.professionnel_id
-            WHERE ps.id = CAST(current_user AS integer)
-        )
-    );
+DO $$
+BEGIN
+    IF NOT EXISTS (SELECT 1 FROM pg_policies WHERE policyname = 'medecin_patient_access') THEN
+        CREATE POLICY medecin_patient_access ON Patient
+        FOR ALL
+        TO medecin
+        USING (
+            id IN (
+                SELECT p.id
+                FROM Patient p
+                JOIN DossierPatient dp ON dp.patient_id = p.id
+                JOIN CompteRendu cr ON cr.dossier_id = dp.id
+                JOIN ProfessionnelSante ps ON ps.id = cr.professionnel_id
+                WHERE ps.id = CAST(current_user AS integer)
+            )
+        );
+    END IF;
+END $$;
 
 -- 10. Création des triggers de journalisation
 DO $$
@@ -215,7 +167,8 @@ BEGIN
 END $$;
 
 -- 11. Création des vues sécurisées
-CREATE VIEW IF NOT EXISTS vue_patient_base AS
+DROP VIEW IF EXISTS vue_patient_base;
+CREATE VIEW vue_patient_base AS
     SELECT id, nom, prenom, dateNaissance
     FROM Patient;
 
@@ -231,4 +184,3 @@ BEGIN
         INSERT INTO ProfessionnelSante (nom, prenom, type, numeroRPPS, cabinet_id) VALUES ('Dupont', 'Jean', 'Médecin', '12345678', 1);
     END IF;
 END $$;
-
