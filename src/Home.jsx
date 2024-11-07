@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import {
   AppBar,
   Button,
@@ -13,26 +13,81 @@ import {
   Typography,
 } from '@mui/material';
 import { Visibility, Edit, Delete, Search } from '@mui/icons-material';
+import { useKeycloak } from '@react-keycloak/web';
+import axios from 'axios';
 
 const Home = () => {
-  const [patients, setPatients] = useState([
-    { id: 1, name: 'Jean Dupont', age: 42, gender: 'Homme' },
-    { id: 2, name: 'Marie Martin', age: 35, gender: 'Femme' },
-  ]);
+  const { keycloak, initialized } = useKeycloak();
+  const [patients, setPatients] = useState([]);
   const [newPatient, setNewPatient] = useState({ name: '', age: '', gender: '' });
   const [searchTerm, setSearchTerm] = useState('');
 
-  const handleAddPatient = () => {
-    // Logic to add a new patient
-    const id = patients.length + 1;
-    setPatients([...patients, { id, ...newPatient }]);
-    setNewPatient({ name: '', age: '', gender: '' });
+  useEffect(() => {
+    if (initialized && keycloak.authenticated) {
+      fetchPatients();
+    }
+  }, [initialized, keycloak]);
+
+  const fetchPatients = async () => {
+    try {
+      const response = await axios.get('http://localhost:3001/patients', {
+        headers: {
+          Authorization: `Bearer ${keycloak.token}`
+        },
+        withCredentials: true
+      });
+      setPatients(response.data);
+    } catch (error) {
+      console.error('Error fetching patients:', error);
+    }
   };
 
-  const handleDeletePatient = (id) => {
-    // Logic to delete a patient
-    setPatients(patients.filter((patient) => patient.id !== id));
+  const handleAddPatient = async () => {
+    try {
+      await axios.post('http://localhost:3001/add-test-patient', {}, {
+          headers: {
+              Authorization: `Bearer ${keycloak.token}`
+          },
+          withCredentials: true
+      });
+
+      const response = await axios.get('http://localhost:3001/patients', {
+          headers: {
+              Authorization: `Bearer ${keycloak.token}`
+          },
+          withCredentials: true
+      });
+      setPatients(response.data);
+      alert('Patient test ajouté avec succès!');
+    } catch (error) {
+      console.error('Error adding test patient:', error);
+      alert('Erreur lors de l\'ajout du patient test');
+    }
   };
+
+  const handleDeletePatient = async (id) => {
+    try {
+      await axios.delete(`http://localhost:3001/patients/${id}`, {
+        headers: {
+          Authorization: `Bearer ${keycloak.token}`
+        },
+        withCredentials: true
+      });
+      fetchPatients();
+    } catch (error) {
+      console.error('Error deleting patient:', error);
+      alert('Erreur lors de la suppression du patient');
+    }
+  };
+
+  if (!initialized) {
+    return <div>Loading...</div>;
+  }
+
+  if (!keycloak.authenticated) {
+    keycloak.login();
+    return null;
+  }
 
   return (
     <Container>
@@ -93,6 +148,13 @@ const Home = () => {
             Ajouter le Patient
           </Button>
         </Paper>
+        
+        <h2>Patients</h2>
+            <ul>
+                {patients.map(patient => (
+                    <li key={patient.id}>{patient.nom} {patient.prenom}</li>
+                ))}
+            </ul>
 
         <Paper style={{ padding: '16px' }}>
           <Typography variant="h6">Rechercher un Patient</Typography>
