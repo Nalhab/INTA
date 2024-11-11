@@ -1,7 +1,6 @@
 const express = require('express');
 const { Pool } = require('pg');
 const session = require('express-session');
-const Keycloak = require('keycloak-connect');
 const cors = require('cors');
 
 const app = express();
@@ -38,19 +37,23 @@ app.use(cors({
   credentials: true
 }));
 
-const keycloakConfig = {
-  realm: 'medical-realm',
-  'auth-server-url': 'http://localhost:8080',
-  'ssl-required': 'external',
-  resource: 'medical-client',
-  'public-client': true,
-  'confidential-port': 0
-};
+app.get('/patient/:id', async (req, res) => {
+  const { id } = req.params;
+  try {
+    const prenom = id.split[0];
+    const nom = id.split[1];
+    const result = await pool.query(`SELECT * FROM Patient WHERE nom=${nom} AND prenom=${prenom}`);
+    res.json(result.rows);
+  } catch (err) {
+    console.error('Database error:', err);
+    res.status(500).json({ 
+      error: 'Database error',
+      details: err.message
+    });
+  }
+});
 
-const keycloak = new Keycloak({ store: memoryStore }, keycloakConfig);
-app.use(keycloak.middleware());
-
-app.get('/patients', keycloak.protect(), async (req, res) => {
+app.get('/patients', async (req, res) => {
   try {
     const result = await pool.query('SELECT * FROM Patient');
     res.json(result.rows);

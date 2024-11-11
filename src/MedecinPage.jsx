@@ -19,7 +19,7 @@ import {
 import { Visibility, Edit, Delete, Search } from '@mui/icons-material';
 import axios from 'axios';
 
-const Home = () => {
+const MedecinPage = () => {
   const [patients, setPatients] = useState([]);
   const [newPatient, setNewPatient] = useState({ nom: '', prenom: '', dateNaissance: '', numeroSecu: '' });
   const [editPatient, setEditPatient] = useState(null); 
@@ -231,5 +231,5 @@ const Home = () => {
   );
 };
 
-export default Home;
+export default MedecinPage;
 
