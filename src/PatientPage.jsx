@@ -9,7 +9,7 @@ import {
 } from '@mui/material';
 import axios from 'axios';
 
-const PatientPage = (userId) => {
+const PatientPage = ({userId}) => {
   const [patientData, setPatientData] = useState({ nom: '', prenom: '', dateNaissance: '', numeroSecu: '' });
   useEffect(() => {
     const fetchPatientData = async () => {

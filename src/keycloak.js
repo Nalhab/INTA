@@ -25,7 +25,7 @@ class KeycloakService {
   }
 
   getName() {
-    return this.keycloak.tokenParsed?.realm_access?.username || [];
+    return this.keycloak.tokenParsed?.preferred_username || '';
   }
 
   // Vérifier si l'utilisateur est authentifié

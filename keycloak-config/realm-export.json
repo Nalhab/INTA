@@ -1504,17 +1504,17 @@
     "organization"
   ],
   "users": [
-    {
-      "username": "medecin1",
+	    {
+      "username": "medecin.medecin",
       "enabled": true,
       "emailVerified": true,
-      "firstName": "medecin1",
-      "lastName": "medecin1",
-      "email": "medecin1@gmail.com",
+      "firstName": "medecin",
+      "lastName": "medecin",
+      "email": "medecin@gmail.com",
       "credentials": [
         {
           "type": "password",
-          "value": "medecin1"
+          "value": "medecin"
         }
       ],
       "realmRoles": [
@@ -1522,33 +1522,16 @@
       ]
     },
     {
-      "username": "medecin2",
+      "username": "patient.patient",
       "enabled": true,
       "emailVerified": true,
-      "firstName": "medecin2",
-      "lastName": "medecin2",
-      "email": "medecin2@gmail.com",
+      "firstName": "patient",
+      "lastName": "patient",
+      "email": "patient@gmail.com",
       "credentials": [
         {
           "type": "password",
-          "value": "medecin2"
-        }
-      ],
-      "realmRoles": [
-        "medecin"
-      ]
-    },
-    {
-      "username": "patient1",
-      "enabled": true,
-      "emailVerified": true,
-      "firstName": "patient1",
-      "lastName": "patient1",
-      "email": "patient1@gmail.com",
-      "credentials": [
-        {
-          "type": "password",
-          "value": "patient1"
+          "value": "patient"
         }
       ],
       "realmRoles": [
@@ -1556,7 +1539,7 @@
       ]
     },
     {
-      "username": "secretaire",
+      "username": "secretaire.secretaire",
       "enabled": true,
       "emailVerified": true,
       "firstName": "secretaire",
