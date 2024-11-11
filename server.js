@@ -40,9 +40,13 @@ app.use(cors({
 app.get('/patient/:id', async (req, res) => {
   const { id } = req.params;
   try {
-    const prenom = id.split[0];
-    const nom = id.split[1];
-    const result = await pool.query(`SELECT * FROM Patient WHERE nom=${nom} AND prenom=${prenom}`);
+    const [prenom, nom] = id.split('.'); // Ajout d'une déstructuration pour extraire directement prenom et nom
+    console.log('Prénom:', prenom);
+    console.log('Nom:', nom);
+    const result = await pool.query(
+      `SELECT * FROM Patient WHERE nom = $1 AND prenom = $2`,
+      [nom, prenom]
+    );
     res.json(result.rows);
   } catch (err) {
     console.error('Database error:', err);
