@@ -1,8 +1,7 @@
-// src/keycloak.js
 import Keycloak from 'keycloak-js';
 
 const keycloak = new Keycloak({
-  url: 'https://localhost:8080/auth',
+  url: 'http://localhost:8080',
   realm: 'medical-realm',
   clientId: 'medical-client',
 });

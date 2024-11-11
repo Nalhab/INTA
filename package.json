@@ -1,22 +1,24 @@
 {
-  "name": "medical-auth-frontend",
+  "name": "tmp",
   "version": "0.1.0",
   "private": true,
   "dependencies": {
+    "@emotion/react": "^11.13.3",
+    "@emotion/styled": "^11.13.0",
+    "@mui/icons-material": "^6.1.6",
+    "@mui/material": "^6.1.6",
     "@testing-library/jest-dom": "^5.17.0",
     "@testing-library/react": "^13.4.0",
     "@testing-library/user-event": "^13.5.0",
     "axios": "^1.7.7",
-    "dotenv": "^16.4.5",
+    "cors": "^2.8.5",
     "express": "^4.21.1",
     "express-session": "^1.18.1",
-    "jwt-decode": "^4.0.0",
-    "keycloak-connect": "^26.0.4",
-    "keycloak-js": "^26.0.2",
+    "keycloak-connect": "^26.0.5",
+    "keycloak-js": "^26.0.5",
     "pg": "^8.13.1",
     "react": "^18.3.1",
     "react-dom": "^18.3.1",
-    "react-router-dom": "^6.27.0",
     "react-scripts": "5.0.1",
     "web-vitals": "^2.1.4"
   },
@@ -45,7 +47,8 @@
     ]
   },
   "devDependencies": {
-    "@babel/plugin-proposal-private-property-in-object": "^7.21.11",
+    "@react-keycloak/core": "^3.2.0",
+    "@react-keycloak/web": "^3.4.0",
     "cross-env": "^7.0.3"
   }
 }
