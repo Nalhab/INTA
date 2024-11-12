@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from 'react';
-import { BrowserRouter as Router, Routes, Route, Navigate } from 'react-router-dom';
+import { BrowserRouter as Router, Routes, Route, Navigate , useNavigate} from 'react-router-dom';
 import KeycloakService from './keycloak'; // Assurez-vous que le chemin est correct
 
 import MedecinPage from './MedecinPage';
@@ -14,20 +14,29 @@ const App = () => {
   const [role, setRole] = useState([]);
   const [name, setName] = useState('');
   const [loading, setLoading] = useState(true);
-
+const navigate = useNavigate();
   // Initialisation de Keycloak
-useEffect(() => {
-KeycloakService.init().then((authenticated) => {
-  setAuthenticated(authenticated);
-  if (authenticated) {
-    const roles = KeycloakService.getRoles();
-    setRole(roles);
-    const name = KeycloakService.getName();
-    setName(name);
-  }
-  setLoading(false);
-});
-}, []);
+  useEffect(() => {
+    KeycloakService.init().then((authenticated) => {
+      setAuthenticated(authenticated);
+      if (authenticated) {
+        const roles = KeycloakService.getRoles();
+        setRole(roles);
+        const name = KeycloakService.getName();
+        setName(name);
+        if (roles.includes('medecin')) {
+          navigate("/medecin");
+        } else if (roles.includes('patient')) {
+          navigate("/patient");
+        } else if (roles.includes('secretaire')) {
+          navigate("/secretaire");
+        } else {
+          navigate("/unauthorized");
+        }
+      }
+      setLoading(false);
+    });
+  }, [navigate]);
 
   if (loading) {
     return <div>Chargement...</div>;
@@ -39,8 +48,8 @@ KeycloakService.init().then((authenticated) => {
 
   const hasRole = (requiredRole) => role.includes(requiredRole);
 
+
   return (
-    <Router>
       <Routes>
         {/* Routes protégées avec vérification des rôles */}
         <Route
@@ -74,7 +83,6 @@ KeycloakService.init().then((authenticated) => {
         {/* Route pour la page d'accès interdit */}
         <Route path="/unauthorized" element={<UnauthorizedPage />} />
       </Routes>
-    </Router>
   );
 };
 

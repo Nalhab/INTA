@@ -2,6 +2,7 @@ import Keycloak from 'keycloak-js';
 
 class KeycloakService {
   constructor() {
+    this.hasInitialized = false;
     this.keycloak = new Keycloak({
       url: 'http://localhost:8080',
       realm: 'medical-realm',
@@ -11,7 +12,15 @@ class KeycloakService {
 
   // Initialiser Keycloak et retourner une promesse
   init() {
-    return this.keycloak.init({ onLoad: 'login-required' });
+    if (!this.hasInitialized)
+    {
+      this.hasInitialized = true;
+      return this.keycloak.init({ onLoad: 'login-required' });
+    }
+    else
+    {
+       return Promise.resolve(this.keycloak.authenticated);
+    }
   }
 
   // Retourne le token de l'utilisateur
