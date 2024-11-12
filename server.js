@@ -37,6 +37,26 @@ app.use(cors({
   credentials: true
 }));
 
+app.get('/test-db', async (req, res) => {
+  try {
+    const result = await pool.query('SELECT NOW()');
+    res.json({
+      status: 'Connected',
+      timestamp: result.rows[0].now,
+      database: pool.options.database
+    });
+  } catch (err) {
+    res.status(500).json({
+      error: err.message,
+      config: {
+        host: pool.options.host,
+        database: pool.options.database,
+        user: pool.options.user
+      }
+    });
+  }
+});
+
 app.get('/patient/:id', async (req, res) => {
   const { id } = req.params;
   try {
@@ -68,22 +88,72 @@ app.get('/patients', async (req, res) => {
   }
 });
 
-app.get('/test-db', async (req, res) => {
+app.get('/patients/search', async (req, res) => {
+  const searchTerm = req.query.searchTerm || '';
+
   try {
-    const result = await pool.query('SELECT NOW()');
-    res.json({
-      status: 'Connected',
-      timestamp: result.rows[0].now,
-      database: pool.options.database
+    const patients = await Patient.find({
+      $or: [
+        { nom: { $regex: searchTerm, $options: 'i' } }, // Recherche insensible à la casse
+        { prenom: { $regex: searchTerm, $options: 'i' } }
+      ]
     });
+
+    res.status(200).json(patients);
+  } catch (error) {
+    console.error('Erreur lors de la recherche de patients:', error);
+    res.status(500).json({ message: 'Erreur serveur' });
+  }
+});
+
+app.get('/dossierPatient/:id', async (req, res) => {
+  try {
+    const result = await pool.query(`SELECT * FROM DossierPatient WHERE patient_id=${id}`);
+    res.json(result.rows);
   } catch (err) {
-    res.status(500).json({
-      error: err.message,
-      config: {
-        host: pool.options.host,
-        database: pool.options.database,
-        user: pool.options.user
-      }
+    console.error('Database error:', err);
+    res.status(500).json({ 
+      error: 'Database error',
+      details: err.message
+    });
+  }
+});
+
+app.get('/dispositif-medical/:id', async (req, res) => {
+  try {
+    const result = await pool.query(`SELECT * FROM DispositifMedical WHERE patient_id=${id}`);
+    res.json(result.rows);
+  } catch (err) {
+    console.error('Database error:', err);
+    res.status(500).json({ 
+      error: 'Database error',
+      details: err.message
+    });
+  }
+});
+
+app.get('/donnees-DM/:id', async (req, res) => {
+  try {
+    const result = await pool.query(`SELECT * FROM DonneesDM WHERE dispositif_id=${id}`);
+    res.json(result.rows);
+  } catch (err) {
+    console.error('Database error:', err);
+    res.status(500).json({ 
+      error: 'Database error',
+      details: err.message
+    });
+  }
+});
+
+app.get('/compte-rendu/:id', async (req, res) => {
+  try {
+    const result = await pool.query(`SELECT * FROM CompteRendu WHERE dossier_id=${id}`);
+    res.json(result.rows);
+  } catch (err) {
+    console.error('Database error:', err);
+    res.status(500).json({ 
+      error: 'Database error',
+      details: err.message
     });
   }
 });
@@ -128,6 +198,46 @@ app.post('/add-patient', async (req, res) => {
   }
 });
 
+app.post('/donnees-DM', async (req, res) => {
+  const { type, numeroSerie, patient_id } = req.body;
+
+  try {
+    const result = await pool.query(
+      `INSERT INTO DonneesDM (dateMesure, tensionArterielle, rythmeCardiaque, oxymetrie, dispositif_id)
+       VALUES ($1, $2, $3, $4, $5) RETURNING *`,
+      [type, numeroSerie, patient_id]
+    );
+
+    res.status(200).json({
+      message: 'Dispositif médical ajouté avec succès',
+      dispositif: result.rows[0]
+    });
+  } catch (error) {
+    console.error('Erreur lors de l\'ajout du dispositif médical:', error);
+    res.status(500).json({ error: 'Erreur lors de l\'ajout du dispositif médical' });
+  }
+});
+
+app.post('/dispositif-medical', async (req, res) => {
+  const { type, numeroSerie, patient_id } = req.body;
+
+  try {
+    const result = await pool.query(
+      `INSERT INTO DispositifMedical (type, numeroSerie, patient_id)
+       VALUES ($1, $2, $3) RETURNING *`,
+      [type, numeroSerie, patient_id]
+    );
+
+    res.status(200).json({
+      message: 'Dispositif médical ajouté avec succès',
+      dispositif: result.rows[0]
+    });
+  } catch (error) {
+    console.error('Erreur lors de l\'ajout du dispositif médical:', error);
+    res.status(500).json({ error: 'Erreur lors de l\'ajout du dispositif médical' });
+  }
+});
+
 app.put('/patients/:id', async (req, res) => {
   const { id } = req.params;
 
@@ -149,24 +259,6 @@ app.put('/patients/:id', async (req, res) => {
   } catch (error) {
     console.error('Error updating patient', error);
     res.status(500).json({ error: 'Failed to update patient' });
-  }
-});
-
-app.get('/patients/search', async (req, res) => {
-  const searchTerm = req.query.searchTerm || '';
-
-  try {
-    const patients = await Patient.find({
-      $or: [
-        { nom: { $regex: searchTerm, $options: 'i' } }, // Recherche insensible à la casse
-        { prenom: { $regex: searchTerm, $options: 'i' } }
-      ]
-    });
-
-    res.status(200).json(patients);
-  } catch (error) {
-    console.error('Erreur lors de la recherche de patients:', error);
-    res.status(500).json({ message: 'Erreur serveur' });
   }
 });
 
