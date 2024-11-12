@@ -41,8 +41,6 @@ app.get('/patient/:id', async (req, res) => {
   const { id } = req.params;
   try {
     const [prenom, nom] = id.split('.'); // Ajout d'une déstructuration pour extraire directement prenom et nom
-    console.log('Prénom:', prenom);
-    console.log('Nom:', nom);
     const result = await pool.query(
       `SELECT * FROM Patient WHERE nom = $1 AND prenom = $2`,
       [nom, prenom]

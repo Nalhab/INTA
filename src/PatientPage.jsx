@@ -8,6 +8,7 @@ import {
   ListItemText,
 } from '@mui/material';
 import axios from 'axios';
+import KeycloakService from './keycloak';
 
 const PatientPage = ({userId}) => {
   const [patientData, setPatientData] = useState({ nom: '', prenom: '', dateNaissance: '', numeroSecu: '' });
@@ -30,6 +31,10 @@ const PatientPage = ({userId}) => {
 
     fetchPatientData();
   }, [userId]);
+  
+  const handleLogout = () => {
+    KeycloakService.logout();
+  };
 
   if (!patientData) return <div>Chargement des données du patient...</div>;
 
@@ -57,6 +62,10 @@ const PatientPage = ({userId}) => {
           </ListItem>
         </List>
       </Paper>
+      <div>
+        <h1>Bienvenue sur la page Médecin</h1>
+        <button onClick={handleLogout}>Déconnexion</button>
+      </div>
     </Container>
   );
 };

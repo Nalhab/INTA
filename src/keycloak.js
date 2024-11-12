@@ -46,6 +46,11 @@ class KeycloakService {
   updateToken() {
     return this.keycloak.updateToken(60);  // Rafraîchir le token chaque minute
   }
+  
+  logout()
+  {
+    this.keycloak.logout();
+  }
 }
 
 export default new KeycloakService();
