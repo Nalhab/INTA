@@ -242,6 +242,50 @@ app.post('/dispositif-medical', async (req, res) => {
   }
 });
 
+app.post('/dossierPatient', async (req, res) => {
+  const { patient_id } = req.body;
+  try {
+    const result = await pool.query(
+      `INSERT INTO DossierPatient (patient_id) VALUES ($1) RETURNING id`,
+      [patient_id]
+    );
+    res.status(201).json({ id: result.rows[0].id });
+  } catch (err) {
+    console.error('Erreur lors de l\'ajout du dossier médical', err);
+    res.status(500).json({ error: 'Erreur lors de l\'ajout du dossier médical' });
+  }
+});
+
+app.post('/dispositif-medical', async (req, res) => {
+  const { type, numeroSerie, patient_id } = req.body;
+  try {
+    const result = await pool.query(
+      `INSERT INTO DispositifMedical (type, numeroserie, patient_id)
+       VALUES ($1, $2, $3) RETURNING id`,
+      [type, numeroSerie, patient_id]
+    );
+    res.status(201).json({ id: result.rows[0].id });
+  } catch (err) {
+    console.error('Erreur lors de l\'ajout du dispositif médical', err);
+    res.status(500).json({ error: 'Erreur lors de l\'ajout du dispositif médical' });
+  }
+});
+
+app.post('/compte-rendu', async (req, res) => {
+  const { contenu, professionnel_id, dossier_id } = req.body;
+  try {
+    const result = await pool.query(
+      `INSERT INTO CompteRendu (contenu, professionnel_id, dossier_id)
+       VALUES ($1, $2, $3) RETURNING id`,
+      [contenu, professionnel_id, dossier_id]
+    );
+    res.status(201).json({ id: result.rows[0].id });
+  } catch (err) {
+    console.error('Erreur lors de l\'ajout du compte rendu', err);
+    res.status(500).json({ error: 'Erreur lors de l\'ajout du compte rendu' });
+  }
+});
+
 app.put('/patients/:id', async (req, res) => {
   const { id } = req.params;
 
