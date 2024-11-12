@@ -20,7 +20,7 @@ import KeycloakService from './keycloak';
 import { Visibility, Edit, Delete, Search } from '@mui/icons-material';
 import axios from 'axios';
 
-const MedecinPage = ({userId}) => {
+const SecretairePage = ({userId}) => {
   const [patients, setPatients] = useState([]);
   const [newPatient, setNewPatient] = useState({ nom: '', prenom: '', dateNaissance: '', numeroSecu: '' });
   const [editPatient, setEditPatient] = useState(null); 
@@ -72,22 +72,6 @@ const MedecinPage = ({userId}) => {
     }
   };
 
-  const handleEditPatient = (patient) => {
-    setEditPatient(patient);
-    setIsEditDialogOpen(true);
-  };
-
-  const handleDeletePatient = async (id) => {
-    try {
-      await axios.delete(`http://localhost:3001/delete-patient/${id}`, { withCredentials: true });
-      fetchPatients();
-      alert('Patient supprimé avec succès!');
-    } catch (error) {
-      console.error('Error deleting patient:', error);
-      alert("Erreur lors de la suppression du patient");
-    }
-  };
-
   const handleSearch = (event) => {
     setSearchTerm(event.target.value);
     fetchPatients2(event.target.value);
@@ -134,15 +118,6 @@ const MedecinPage = ({userId}) => {
                       primary={`${patient.nom} ${patient.prenom}`}
                       secondary={`${formattedDate} - N° Sécu : ${patient.numerosecu}`}
                     />
-                    <IconButton color="primary">
-                      <Visibility />
-                    </IconButton>
-                    <IconButton color="secondary" onClick={() => handleEditPatient(patient)}>
-                      <Edit />
-                    </IconButton>
-                    <IconButton color="error" onClick={() => handleDeletePatient(patient.id)}>
-                      <Delete />
-                    </IconButton>
                   </ListItem>
                 );
               })}
@@ -189,50 +164,7 @@ const MedecinPage = ({userId}) => {
             Ajouter le Patient
           </Button>
         </Paper>
-
-        {/* Modale pour éditer un patient */}
-        <Dialog open={isEditDialogOpen} onClose={() => setIsEditDialogOpen(false)}>
-          <DialogTitle>Modifier le Patient</DialogTitle>
-          <DialogContent>
-            <TextField
-              label="Nom"
-              value={editPatient?.nom || ''}
-              onChange={(e) => setEditPatient({ ...editPatient, nom: e.target.value })}
-              fullWidth
-              margin="normal"
-            />
-            <TextField
-              label="Prénom"
-              value={editPatient?.prenom || ''}
-              onChange={(e) => setEditPatient({ ...editPatient, prenom: e.target.value })}
-              fullWidth
-              margin="normal"
-            />
-            <TextField
-              label="Date de Naissance"
-              name="dateNaissance"
-              type="date"
-              InputLabelProps={{ shrink: true }}
-              value={editPatient?.datenaissance ? editPatient.datenaissance.split('T')[0] : ''}
-              onChange={(e) => setEditPatient({ ...editPatient, dateNaissance: e.target.value })}
-              fullWidth
-              margin="normal"
-            />
-            <TextField
-              label="Numéro de Sécurité Sociale"
-              value={editPatient?.numerosecu || ''}
-              onChange={(e) => setEditPatient({ ...editPatient, numeroSecu: e.target.value })}
-              fullWidth
-              margin="normal"
-            />
-          </DialogContent>
-          <DialogActions>
-            <Button onClick={() => setIsEditDialogOpen(false)} color="primary">Annuler</Button>
-            <Button onClick={handleEditPatient} color="primary">Enregistrer</Button>
-          </DialogActions>
-        </Dialog>
 	<div>
-          <h1>Bienvenue sur la page Médecin</h1>
           <button onClick={handleLogout}>Déconnexion</button>
         </div>
       </Container>
@@ -240,5 +172,5 @@ const MedecinPage = ({userId}) => {
   );
 };
 
-export default MedecinPage;
+export default SecretairePage;
 

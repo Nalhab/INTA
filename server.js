@@ -108,7 +108,8 @@ app.get('/patients/search', async (req, res) => {
 
 app.get('/dossierPatient/:id', async (req, res) => {
   try {
-    const result = await pool.query(`SELECT * FROM DossierPatient WHERE patient_id=${id}`);
+    const { id } = req.params;
+    const result = await pool.query('SELECT * FROM DossierPatient WHERE patient_id=$1', [id]);
     res.json(result.rows);
   } catch (err) {
     console.error('Database error:', err);
@@ -121,7 +122,8 @@ app.get('/dossierPatient/:id', async (req, res) => {
 
 app.get('/dispositif-medical/:id', async (req, res) => {
   try {
-    const result = await pool.query(`SELECT * FROM DispositifMedical WHERE patient_id=${id}`);
+    const { id } = req.params;
+    const result = await pool.query('SELECT * FROM DispositifMedical WHERE patient_id=$1', [id]);
     res.json(result.rows);
   } catch (err) {
     console.error('Database error:', err);
@@ -134,7 +136,8 @@ app.get('/dispositif-medical/:id', async (req, res) => {
 
 app.get('/donnees-DM/:id', async (req, res) => {
   try {
-    const result = await pool.query(`SELECT * FROM DonneesDM WHERE dispositif_id=${id}`);
+    const { id } = req.params;
+    const result = await pool.query('SELECT * FROM DonneesDM WHERE dispositif_id=$1', [id]);
     res.json(result.rows);
   } catch (err) {
     console.error('Database error:', err);
@@ -147,7 +150,8 @@ app.get('/donnees-DM/:id', async (req, res) => {
 
 app.get('/compte-rendu/:id', async (req, res) => {
   try {
-    const result = await pool.query(`SELECT * FROM CompteRendu WHERE dossier_id=${id}`);
+    const { id } = req.params;
+    const result = await pool.query('SELECT * FROM CompteRendu WHERE dossier_id=$1', [id]);
     res.json(result.rows);
   } catch (err) {
     console.error('Database error:', err);

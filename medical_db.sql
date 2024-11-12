@@ -109,6 +109,22 @@ BEGIN
 END $$;
 
 -- 6. Création d'un utilisateur test
+INSERT INTO CabinetMedical (id, nom, adresse) VALUES (1, 'Cabinet Médical Central', '10 rue de la Santé Paris 75001');
+INSERT INTO ProfessionnelSante (nom, prenom, type, numeroRPPS, cabinet_id) VALUES ('Dupont', 'Jean', 'Médecin Généraliste', 'RPPS123456', 1);
+INSERT INTO ProfessionnelSante (nom, prenom, type, numeroRPPS, cabinet_id) VALUES ('Moreau', 'Alice', 'Cardiologue', 'RPPS654321', 1);
+INSERT INTO Patient (nom, prenom, dateNaissance, numeroSecu) VALUES ('Martin', 'Paul', '1980-05-15', '123456789012345');
+INSERT INTO Patient (nom, prenom, dateNaissance, numeroSecu) VALUES ('patient', 'patient', '1990-08-25', '987654322098765');
+INSERT INTO Patient (nom, prenom, dateNaissance, numeroSecu) VALUES ('Durand', 'Sophie', '1990-08-25', '987654321098765');
+INSERT INTO DossierPatient (patient_id) VALUES (1);
+INSERT INTO DossierPatient (patient_id) VALUES (2);
+INSERT INTO DispositifMedical (type, numeroSerie, patient_id) VALUES ('Tensiomètre', 'TM123456', 1);
+INSERT INTO DispositifMedical (type, numeroSerie, patient_id) VALUES ('Oxymètre', 'OX654321', 2);
+INSERT INTO DonneesDM (dateMesure, tensionArterielle, rythmeCardiaque, oxymetrie, dispositif_id) VALUES ('2023-01-01 10:00:00', '120/80', 70, 98, 1);
+INSERT INTO DonneesDM (dateMesure, tensionArterielle, rythmeCardiaque, oxymetrie, dispositif_id) VALUES ('2023-01-02 11:00:00', '110/70', 65, 97, 2);
+INSERT INTO Alerte (type, description, niveauUrgence, patient_id) VALUES ('Tension élevée', 'Tension artérielle élevée détectée', 3, 1);
+INSERT INTO Alerte (type, description, niveauUrgence, patient_id) VALUES ('Oxymétrie basse', 'Niveau d oxygène dans le sang bas détecté', 4, 2);
+INSERT INTO CompteRendu (contenu, professionnel_id, dossier_id) VALUES ('Patient en bonne santé générale.', 1, 1);
+INSERT INTO CompteRendu (contenu, professionnel_id, dossier_id) VALUES ('Patient nécessite un suivi régulier.', 1, 2);
 
 -- 7. Attribution des droits aux rôles (Pas besoin de condition IF NOT EXISTS)
 GRANT SELECT, INSERT, UPDATE ON Patient TO medecin;
