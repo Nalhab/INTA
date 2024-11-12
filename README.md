@@ -11,8 +11,8 @@ Ce projet est une application web médicale utilisant Keycloak pour l'authentifi
 ## Installation
 1. Clonez le dépôt :
     ```sh
-    git clone <URL_DU_DEPOT>
-    cd <NOM_DU_DEPOT>
+    git clone https://github.com/Nalhab/INTA.git
+    cd INTA
     ```
 
 2. Installez les dépendances :
