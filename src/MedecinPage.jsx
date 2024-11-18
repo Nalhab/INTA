@@ -36,7 +36,38 @@ const MedecinPage = () => {
         console.error('Error fetching patients:', error);
       }
     };
+    const getPatients = async () => {
+      try {
+        const response = await axios.get("http://localhost:8081/fhir/Patient", {
+          headers: {
+            "Accept": "application/json",
+          },
+        });
+        console.log(response.data); // Affiche les patients retournés
+            if (response.data && response.data.entry) {
+      // Parcours des patients et affichage du nom (famille et prénom)
+      response.data.entry.forEach(entry => {
+        const patient = entry.resource; // Chaque patient est dans 'resource'
+        
+        if (patient.name && patient.name[0]) {
+          const familyName = patient.name[0].family; // Nom de famille
+          const givenName = patient.name[0].given ? patient.name[0].given.join(" ") : ""; // Prénom
+          
+          console.log(`Nom: ${familyName}, Prénom: ${givenName}`);
+        }
+      });
+    } else {
+      console.log("Aucun patient trouvé.");
+    }
+
+        return response.data;
+      } catch (error) {
+        console.error("Erreur lors de la récupération des patients :", error);
+        throw error;
+      }
+    };
     fetchPatients();
+    getPatients();
   }, []);
 
   const handleSearch = (event) => {

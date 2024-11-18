@@ -16,7 +16,7 @@ services:
     environment:
       DB_VENDOR: POSTGRES
       DB_ADDR: postgres
-      DB_DATABASE: keycloak
+      DB_DATABASE: medical_db
       DB_USER: keycloak
       DB_PASSWORD: password
       KC_BOOTSTRAP_ADMIN_USERNAME: admin
@@ -29,5 +29,31 @@ services:
       - ./keycloak-config/realm-export.json:/opt/keycloak/data/import/realm-export.json:Z
     command: ["start-dev", "--import-realm"]
 
+  fhir-db:
+    image: postgres:16
+    environment:
+      POSTGRES_USER: fhiruser
+      POSTGRES_PASSWORD: fhirpassword
+      POSTGRES_DB: fhir
+    ports:
+      - "5433:5432" # Port différent pour éviter les conflits
+    volumes:
+      - fhir_data:/var/lib/postgresql/data:Z
+
+  fhir-server:
+    image: hapiproject/hapi:latest
+    environment:
+      HAPI_FHIR_DB_URL: jdbc:postgresql://fhir-db:5432/fhir
+      HAPI_FHIR_DB_USERNAME: fhiruser
+      HAPI_FHIR_DB_PASSWORD: fhirpassword
+    ports:
+      - "8081:8080"
+    volumes:
+      - ./fhir-config/application.yaml:/usr/local/tomcat/conf/application.yaml:Z
+    depends_on:
+      - fhir-db
+
 volumes:
   postgres_data:
+  fhir_data:
+

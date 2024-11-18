@@ -2,7 +2,7 @@ import React, { useState, useEffect } from 'react';
 import { BrowserRouter as Router, Routes, Route, Navigate , useNavigate} from 'react-router-dom';
 import KeycloakService from './keycloak'; // Assurez-vous que le chemin est correct
 
-import MedecinPage from './MedecinPage';
+import MedecinPage from './FhirPatientPage';
 import PatientPage from './PatientPage';
 import SecretairePage from './SecretairePage';
 import DashboardPage from './DashboardPage';
