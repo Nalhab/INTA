@@ -20,11 +20,6 @@ echo "Docker Compose démarré avec PID $DOCKER_PID"
 # Attendre que Docker Compose soit prêt
 sleep 5
 
-# Démarrer le serveur Node.js
-node server.js &
-NODE_PID=$!
-echo "Serveur Node démarré avec PID $NODE_PID"
-
 # Démarrer l'application front-end avec npm
 npm start &
 NPM_PID=$!

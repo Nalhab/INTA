@@ -1,8 +1,7 @@
 import React, { useState, useEffect } from 'react';
 import { BrowserRouter as Router, Routes, Route, Navigate , useNavigate} from 'react-router-dom';
-import KeycloakService from './keycloak'; // Assurez-vous que le chemin est correct
-
-import MedecinPage from './FhirPatientPage';
+import KeycloakService from './keycloak'; 
+import MedecinPage from './MedecinPage';
 import PatientPage from './PatientPage';
 import SecretairePage from './SecretairePage';
 import DashboardPage from './DashboardPage';
@@ -15,7 +14,6 @@ const App = () => {
   const [name, setName] = useState('');
   const [loading, setLoading] = useState(true);
 const navigate = useNavigate();
-  // Initialisation de Keycloak
   useEffect(() => {
     KeycloakService.init().then((authenticated) => {
       setAuthenticated(authenticated);

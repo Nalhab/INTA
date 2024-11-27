@@ -1,7 +1,7 @@
 # Projet Médical
 
 ## Description
-Ce projet est une application web médicale utilisant Keycloak pour l'authentification et PostgreSQL comme base de données. L'application permet aux médecins, patients et secrétaires de se connecter et d'accéder à différentes fonctionnalités en fonction de leurs rôles.
+Ce projet est une application web médicale utilisant Keycloak pour l'authentification et FHIR pour le stockage des données (et l'inter-opérabilité des données). L'application permet aux médecins, patients et secrétaires de se connecter et d'accéder à différentes fonctionnalités en fonction de leurs rôles.
 
 ## Prérequis
 - Docker
@@ -52,7 +52,6 @@ Voici des exemples de connexions pour différents rôles :
 ## Structure du projet
 - `docker-compose.yml` : Configuration des services Docker (PostgreSQL et Keycloak).
 - `keycloak-config/realm-export.json` : Configuration de Keycloak.
-- `medical_db.sql` : Script SQL pour initialiser la base de données.
 - `public/` : Contient les fichiers statiques de l'application React.
 - `src/` : Contient le code source de l'application React.
 - `server.js` : Serveur Node.js pour l'application.
