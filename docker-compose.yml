@@ -1,5 +1,5 @@
 services:
-  keycloak:
+  keycloak1:
     image: quay.io/keycloak/keycloak:latest
     environment:
       KC_BOOTSTRAP_ADMIN_USERNAME: admin
@@ -10,20 +10,16 @@ services:
       - ./keycloak-config/realm-export.json:/opt/keycloak/data/import/realm-export.json:Z
     command: ["start-dev", "--import-realm"]
 
-  hapi-fhir:
-    image: hapiproject/hapi:latest # Image du serveur HAPI FHIR
+  hapi-fhir1:
+    image: hapiproject/hapi:latest
     container_name: hapi-fhir
     ports:
       - 8081:8080
     environment:
-      HAPI_FHIR_VERSION: r4 # Version du standard FHIR
+      HAPI_FHIR_VERSION: r4
     volumes:
       - hapi_data:/var/lib/jetty/data
-    healthcheck:
-      test: ["CMD", "curl", "-f", "http://localhost:8081/fhir"]
-      interval: 30s
-      timeout: 10s
-      retries: 5
+
 
 volumes:
   keycloak_data:

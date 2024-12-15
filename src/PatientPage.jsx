@@ -1,38 +1,69 @@
 import React, { useState, useEffect } from "react";
 import axios from "axios";
+import keycloak from "./keycloak";
+import VitalSigns from "./components/VitalSigns";
+import "./PatientPage.css";
 
 const PatientPage = () => {
-  const backendUrl = 'http://localhost:8081/fhir';
-  const patientId = 1; // Patient ID statique
+  const backendUrl = 'http://localhost:3001';
+  const [patientId, setPatientId] = useState(null);
+  
+  // Ajouter une fonction pour trouver le premier patient disponible
+  const findFirstPatient = async () => {
+    try {
+      const response = await axios.get(`${backendUrl}/patients`);
+      if (response.data && response.data.length > 0) {
+        setPatientId(response.data[0].id);
+      } else {
+        throw new Error('Aucun patient trouvé');
+      }
+    } catch (error) {
+      console.error('Erreur lors de la recherche du patient:', error);
+      alert('Vous n\'existez pas dans notre système.');
+      handleLogout();
+    }
+  };
+
+  // Modifier useEffect pour d'abord trouver le patient
+  useEffect(() => {
+    findFirstPatient();
+  }, []);
+
+  useEffect(() => {
+    if (patientId) {
+      fetchPatientDetails();
+      fetchAppointments();
+      fetchConsultations();
+      fetchPrescriptions();
+    }
+  }, [patientId]);
 
   const [patient, setPatient] = useState(null);
   const [appointments, setAppointments] = useState([]);
   const [consultations, setConsultations] = useState([]);
   const [prescriptions, setPrescriptions] = useState([]);
 
-  // Chargement initial des données du patient
-  useEffect(() => {
-    fetchPatientDetails();
-    fetchAppointments();
-    fetchConsultations();
-    fetchPrescriptions();
-  }, []);
-
   // Récupérer les détails du patient
   const fetchPatientDetails = async () => {
     try {
-      const response = await axios.get(`${backendUrl}/Patient/${patientId}`);
-      setPatient(response.data);
+      const response = await axios.get(`${backendUrl}/patients/${patientId}`);
+      if (response.data) {
+        setPatient(response.data);
+      } else {
+        throw new Error('Données du patient non disponibles');
+      }
     } catch (error) {
-      console.error('Erreur lors de la récupération des détails du patient:', error);
+      console.error('Erreur lors de la récupération des détails du patient:', error.response?.data || error);
+      // Optionnel : Afficher un message d'erreur à l'utilisateur
+      alert('Impossible de charger les informations du patient. Veuillez réessayer plus tard.');
     }
   };
 
   // Récupérer les rendez-vous
   const fetchAppointments = async () => {
     try {
-      const response = await axios.get(`${backendUrl}/Appointment?patient=${patientId}`);
-      setAppointments(response.data.entry ? response.data.entry.map(entry => entry.resource) : []);
+      const response = await axios.get(`${backendUrl}/patients/${patientId}/appointments`);
+      setAppointments(response.data || []);
     } catch (error) {
       console.error('Erreur lors de la récupération des rendez-vous:', error);
     }
@@ -41,8 +72,8 @@ const PatientPage = () => {
   // Récupérer les consultations
   const fetchConsultations = async () => {
     try {
-      const response = await axios.get(`${backendUrl}/Observation?subject=Patient/${patientId}`);
-      setConsultations(response.data.entry ? response.data.entry.map(entry => entry.resource) : []);
+      const response = await axios.get(`${backendUrl}/patients/${patientId}/consultations`);
+      setConsultations(response.data || []);
     } catch (error) {
       console.error('Erreur lors de la récupération des consultations:', error);
     }
@@ -51,156 +82,112 @@ const PatientPage = () => {
   // Récupérer les prescriptions
   const fetchPrescriptions = async () => {
     try {
-      const response = await axios.get(`${backendUrl}/MedicationRequest?subject=Patient/${patientId}`);
-      setPrescriptions(response.data.entry ? response.data.entry.map(entry => entry.resource) : []);
+      const response = await axios.get(`${backendUrl}/patients/${patientId}/prescriptions`);
+      setPrescriptions(response.data || []);
     } catch (error) {
       console.error('Erreur lors de la récupération des prescriptions:', error);
     }
   };
 
-  if (!patient) {
-    return <div>Chargement des informations du patient...</div>;
+  const handleLogout = () => {
+    keycloak.logout();
+  };
+
+  // Modifier la condition de chargement
+  if (!patientId || !patient) {
+    return <div className="loading">Chargement des informations du patient...</div>;
   }
 
   return (
-    <div style={styles.container}>
-      <h1>Espace Patient</h1>
+    <div className="PatientPage">
+      <div className="header">
+        <h1 className="Title">Espace Patient</h1>
+        <button className="logoutButton" onClick={handleLogout}>
+          Déconnexion
+        </button>
+      </div>
 
-      {/* Informations personnelles du patient */}
-      <div style={styles.section}>
+      {/* Informations personnelles */}
+      <div className="container">
         <h2>Mes Informations Personnelles</h2>
-        <div style={styles.patientInfo}>
-          <p>
-            <strong>Nom:</strong> {patient.name?.[0]?.family} {patient.name?.[0]?.given?.[0]}
-          </p>
-          <p>
-            <strong>Date de Naissance:</strong> {new Date(patient.birthDate).toLocaleDateString()}
-          </p>
-          <p>
-            <strong>Genre:</strong> {patient.gender === 'male' ? 'Homme' : 'Femme'}
-          </p>
-          <p>
-            <strong>Téléphone:</strong> {patient.telecom?.find(t => t.system === 'phone')?.value}
-          </p>
-          <p>
-            <strong>Email:</strong> {patient.telecom?.find(t => t.system === 'email')?.value}
-          </p>
+        <div className="infoCard">
+        <p><strong>Prénom :</strong> {patient?.name?.[0]?.given?.[0] || 'N/A'}</p>
+            <p><strong>Nom :</strong> {patient?.name?.[0]?.family || 'N/A'}</p>
+            <p><strong>Genre :</strong> {patient?.gender || 'N/A'}</p>
+            <p><strong>Date de Naissance :</strong> {patient?.birthDate || 'N/A'}</p>
+            <p><strong>Adresse :</strong> {patient?.address?.[0]?.line?.[0] || 'N/A'}</p>
+            <p><strong>Ville :</strong> {patient?.address?.[0]?.city || 'N/A'}</p>
+            <p><strong>Code Postal :</strong> {patient?.address?.[0]?.postalCode || 'N/A'}</p>
+            <p><strong>Pays :</strong> {patient?.address?.[0]?.country || 'N/A'}</p>
+            <p><strong>Téléphone :</strong> {patient?.telecom?.[0]?.value || 'N/A'}</p>
+            <p><strong>Email :</strong> {patient?.telecom?.[1]?.value || 'N/A'}</p>
+            <p><strong>Médecin Traitant :</strong> {patient?.generalPractitioner?.[0]?.display || 'N/A'}</p>
         </div>
       </div>
 
       {/* Rendez-vous */}
-      <div style={styles.section}>
+      <div className="container">
         <h2>Mes Rendez-vous</h2>
         {appointments.length === 0 ? (
-          <p>Aucun rendez-vous programmé</p>
+          <p className="emptyMessage">Aucun rendez-vous programmé</p>
         ) : (
-          <ul style={styles.list}>
+          <div className="cardList">
             {appointments.map((appointment) => (
-              <li key={appointment.id} style={styles.listItem}>
-                <div style={styles.info}>
-                  <p><strong>Date:</strong> {new Date(appointment.start).toLocaleString()}</p>
-                  <p><strong>Description:</strong> {appointment.description}</p>
-                </div>
-              </li>
+              <div key={appointment.id} className="card">
+                <p><strong>Date:</strong> {new Date(appointment.start).toLocaleString()}</p>
+                <p><strong>Description:</strong> {appointment.description}</p>
+              </div>
             ))}
-          </ul>
-        )}
-      </div>
-
-      {/* Consultations */}
-      <div style={styles.section}>
-        <h2>Mes Consultations</h2>
-        {consultations.length === 0 ? (
-          <p>Aucune consultation enregistrée</p>
-        ) : (
-          <ul style={styles.list}>
-            {consultations.map((consultation) => (
-              <li key={consultation.id} style={styles.listItem}>
-                <div style={styles.info}>
-                  <p><strong>Date:</strong> {new Date(consultation.effectiveDateTime).toLocaleString()}</p>
-                  <p><strong>Motif:</strong> {consultation.code.text}</p>
-                  <p><strong>Notes:</strong> {consultation.valueString}</p>
-                </div>
-              </li>
-            ))}
-          </ul>
+          </div>
         )}
       </div>
 
       {/* Prescriptions */}
-      <div style={styles.section}>
+      <div className="container">
         <h2>Mes Prescriptions</h2>
         {prescriptions.length === 0 ? (
-          <p>Aucune prescription enregistrée</p>
+          <p className="emptyMessage">Aucune prescription enregistrée</p>
         ) : (
-          <ul style={styles.list}>
+          <div className="cardList">
             {prescriptions.map((prescription) => (
-              <li key={prescription.id} style={styles.listItem}>
-                <div style={styles.info}>
-                  <p><strong>Médicament:</strong> {prescription.medicationCodeableConcept?.text}</p>
-                  <p><strong>Dosage:</strong> {prescription.dosageInstruction?.[0]?.text}</p>
-                  <p><strong>Durée:</strong> {new Date(prescription.dosageInstruction?.[0]?.timing?.repeat?.boundsPeriod?.start).toLocaleString()}</p>
-                  <p><strong>Instructions:</strong> {prescription.dosageInstruction?.[0]?.route?.text}</p>
-                </div>
-              </li>
+              <div key={prescription.id} className="card">
+                <p><strong>Médicament:</strong> {prescription.medicationCodeableConcept?.text}</p>
+                <p><strong>Dosage:</strong> {prescription.dosageInstruction?.[0]?.text}</p>
+                <p><strong>Durée:</strong> {new Date(prescription.dosageInstruction?.[0]?.timing?.repeat?.boundsPeriod?.start).toLocaleString()}</p>
+                <p><strong>Instructions:</strong> {prescription.dosageInstruction?.[0]?.route?.text}</p>
+              </div>
             ))}
-          </ul>
+          </div>
         )}
       </div>
+      
+      {/* Consultations */}
+      <div className="container">
+        <h2>Mes Consultations</h2>
+        {consultations.length === 0 ? (
+          <p className="emptyMessage">Aucune consultation enregistrée</p>
+        ) : (
+          <div className="cardList">
+            {consultations.map((consultation) => (
+              <div key={consultation.id} className="card">
+                <p><strong>Date:</strong> {new Date(consultation.effectiveDateTime).toLocaleString()}</p>
+                <p><strong>Motif:</strong> {consultation.code.text}</p>
+                <p><strong>Notes:</strong> {consultation.valueString}</p>
+              </div>
+            ))}
+          </div>
+        )}
+      </div>
+
+      {/* Données de santé */}
+      <div className="container">
+        <h2>Mes Données de Santé</h2>
+        {patientId && <VitalSigns patientId={patientId} />}
+      </div>
+
+      
     </div>
   );
 };
-
-const styles = {
-  container: {
-    padding: '20px',
-    fontFamily: 'Arial, sans-serif',
-    maxWidth: '1200px',
-    margin: '0 auto',
-    backgroundColor: '#f0f4f8', // Light blue-gray background
-    minHeight: '100vh'
-  },
-  section: {
-    marginBottom: '30px',
-    padding: '20px',
-    backgroundColor: '#ffffff', // White background for sections
-    borderRadius: '12px',
-    boxShadow: '0 4px 6px rgba(0, 105, 255, 0.1)', // Subtle blue shadow
-    border: '1px solid #e6eaf0' // Soft border
-  },
-  patientInfo: {
-    display: 'flex',
-    flexDirection: 'column',
-    gap: '15px',
-    backgroundColor: '#e9f5ff', // Very light blue background
-    padding: '20px',
-    borderRadius: '8px'
-  },
-  list: {
-    listStyleType: 'none',
-    padding: 0
-  },
-  listItem: {
-    padding: '15px',
-    marginBottom: '15px',
-    backgroundColor: '#f7f9fc', // Soft blue-white
-    borderRadius: '8px',
-    boxShadow: '0 2px 4px rgba(0, 105, 255, 0.08)', // Subtle shadow
-    borderLeft: '4px solid #2c7be5', // Accent border
-    transition: 'transform 0.2s ease-in-out'
-  },
-  info: {
-    display: 'flex',
-    flexDirection: 'column',
-    gap: '8px',
-    color: '#1a2b45' // Dark blue-gray text
-  },
-  headings: {
-    color: '#2c7be5', // Bright blue for headings
-    borderBottom: '2px solid #2c7be5', // Underline effect
-    paddingBottom: '10px'
-  }
-};
-
 
 export default PatientPage;

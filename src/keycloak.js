@@ -54,4 +54,3 @@ class KeycloakService {
 }
 
 export default new KeycloakService();
-

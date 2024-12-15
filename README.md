@@ -1,7 +1,7 @@
 # Projet Médical
 
 ## Description
-Ce projet est une application web médicale utilisant Keycloak pour l'authentification et FHIR pour le stockage des données (et l'inter-opérabilité des données). L'application permet aux médecins, patients et secrétaires de se connecter et d'accéder à différentes fonctionnalités en fonction de leurs rôles.
+Ce projet est une application web médicale utilisant Keycloak pour l'authentification et FHIR pour le stockage des données (et l'inter-opérabilité des données). L'application permet aux médecins, patients et secrétaires de se connecter et d'accéder à différentes fonctionnalités en fonction de leurs rôles. C'est 3 roles font partie du meme cabinet medical.
 
 ## Prérequis
 - Docker
@@ -44,6 +44,7 @@ Voici des exemples de connexions pour différents rôles :
 ### Patient
 - Nom d'utilisateur: patient.patient
 - Mot de passe: patient
+Cet identifiant correnspond au patient ayant le plus ID lors du GET dans la base de données.
 
 ### Secrétaire
 - Nom d'utilisateur: secretaire.secretaire
@@ -56,6 +57,42 @@ Voici des exemples de connexions pour différents rôles :
 - `src/` : Contient le code source de l'application React.
 - `server.js` : Serveur Node.js pour l'application.
 - `run_project.sh` : Script pour démarrer et arrêter le projet.
+
+## Utilisation du site
+Un médecin exemple à été créé :
+    username : medecin.medecin
+    password : medecin
+
+Un patient exemple à été créé :
+    username : patient.patient
+    password : patient
+
+Un médecin exemple à été créé :
+    username : secretaire.secretaire
+    password : secretaire
+
+Les possibilités par role :
+    Medecin : possede le plus de possibilite
+        - Ajout, vision, modification, suppresion de fiches patient
+        - Ajout, vision, modification, suppresion de rendez-vous
+        - Ajout, vision, modification, suppresion de consultations
+        - Ajout, vision, modification, suppresion de prescriptions
+        - Ajout, vision, modification, suppresion de mesures de signes vitaux
+    
+    Patient :
+        - Vision de sa fiche patient
+        - Vision de ses rendez-vous
+        - Vision de ses consultations
+        - Vision de ses prescriptions
+        - Vision de mesures de signes vitaux
+    
+    Secretaire :
+        - Vision de fiches patient
+        - Vision de rendez-vous
+
+Pour facilite les tests un bouton "Simulation de patient" a ete ajouté sur la page medecin, et un bouton "Simuler donnees" sur la page details patient du medecin. Ils sont en font de page. Le premier ajoute 2 patient exemple, le second ajoute 2 rendez-vous, 2 consultations et 2 prescriptions.
+
+#### Attention a la réactivité d serveur FHIR. En effet il faut attendre parfois 1 minute pour que les données s'actualise sur la page lors d'un ajout. 
 
 ## Développement
 Pour commencer le développement, vous pouvez utiliser les commandes suivantes :

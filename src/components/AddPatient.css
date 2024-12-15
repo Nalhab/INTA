@@ -1,0 +1,43 @@
+.add-patient {
+  background: #f1f1f1;
+  padding: 20px;
+  border-radius: 8px;
+  margin-bottom: 20px;
+}
+
+.add-patient h2 {
+  margin-bottom: 15px;
+  color: #333;
+}
+
+.add-patient input,
+.add-patient select {
+  display: block;
+  width: 100%;
+  padding: 8px;
+  margin-bottom: 10px;
+  border-radius: 4px;
+  border: 1px solid #ccc;
+}
+
+.add-patient button {
+  padding: 10px 20px;
+  background-color: #28a745;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+}
+
+.add-patient button:hover {
+  background-color: #218838;
+}
+
+.address-fields {
+  display: flex;
+  gap: 16px; /* Ajustez l'espacement entre les champs si nécessaire */
+}
+
+.address-fields input {
+  flex: 1; /* Les champs occuperont des espaces égaux */
+}

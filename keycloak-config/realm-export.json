@@ -85,6 +85,15 @@
         "clientRole": false,
         "containerId": "10718fb9-bae8-4d39-a29b-c5c74a5ce093",
         "attributes": {}
+      },
+      {
+        "name": "medecin"
+      },
+      {
+        "name": "patient"
+      },
+      {
+        "name": "secretaire"
       }
     ],
     "client": {
@@ -331,7 +340,6 @@
       ],
       "security-admin-console": [],
       "admin-cli": [],
-      "account-console": [],
       "broker": [
         {
           "id": "88a1255f-c8c0-4621-b9c3-9d710fe2d227",
@@ -861,6 +869,18 @@
         "organization",
         "microprofile-jwt"
       ]
+    },
+    {
+      "clientId": "cabinet1-client",
+      "enabled": true,
+      "publicClient": true,
+      "redirectUris": [
+        "http://localhost:3000/*"
+      ],
+      "webOrigins": [
+        "http://localhost:3000"
+      ],
+      "directAccessGrantsEnabled": true
     }
   ],
   "clientScopes": [
@@ -1504,13 +1524,30 @@
     "organization"
   ],
   "users": [
-	    {
+    {
       "username": "medecin.medecin",
       "enabled": true,
       "emailVerified": true,
       "firstName": "medecin",
       "lastName": "medecin",
       "email": "medecin@gmail.com",
+      "credentials": [
+        {
+          "type": "password",
+          "value": "medecin"
+        }
+      ],
+      "realmRoles": [
+        "medecin"
+      ]
+    },
+    {
+      "username": "Dr.john",
+      "enabled": true,
+      "emailVerified": true,
+      "firstName": "John",
+      "lastName": "Doe",
+      "email": "dr.john@gmail.com",
       "credentials": [
         {
           "type": "password",
@@ -1570,6 +1607,20 @@
       ],
       "realmRoles": [
         "admin_medical"
+      ]
+    },
+    {
+      "username": "medecin1",
+      "enabled": true,
+      "credentials": [
+        {
+          "type": "password",
+          "value": "password",
+          "temporary": false
+        }
+      ],
+      "realmRoles": [
+        "medecin"
       ]
     }
   ],
