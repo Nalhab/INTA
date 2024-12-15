@@ -66,12 +66,13 @@ Un médecin exemple à été créé :
 ```
 
 Un patient exemple à été créé :
+ /!\ Par défaut le patient n'existe pas, il en créer minimu un avec le compte médecin. /!\
 ```
     username : patient.patient
     password : patient
 ```
 
-Un médecin exemple à été créé :
+Une secretaire exemple à été créé :
 ```
     username : secretaire.secretaire
     password : secretaire
@@ -79,7 +80,7 @@ Un médecin exemple à été créé :
 
 Les possibilités par role :
 ```
-    Medecin : possede le plus de possibilite
+    Medecin : possède le plus de fonctionnalités
         - Ajout, vision, modification, suppresion de fiches patient
         - Ajout, vision, modification, suppresion de rendez-vous
         - Ajout, vision, modification, suppresion de consultations
@@ -98,7 +99,7 @@ Les possibilités par role :
         - Vision de rendez-vous
 ```
 
-Pour facilite les tests un bouton "Simulation de patient" a ete ajouté sur la page medecin, et un bouton "Simuler donnees" sur la page details patient du medecin. Ils sont en font de page. Le premier ajoute 2 patient exemple, le second ajoute 2 rendez-vous, 2 consultations et 2 prescriptions.
+Pour facilite les tests un bouton "Simulation de patient" a été ajouté sur la page médecin, et un bouton "Simuler données" sur la page détails patient du médecin. Ils sont en font de page. Le premier ajoute 2 patient exemple, le second ajoute 2 rendez-vous, 2 consultations et 2 prescriptions.
 
 #### Attention a la réactivité d serveur FHIR. En effet il faut attendre parfois 1 minute pour que les données s'actualise sur la page lors d'un ajout. 
 
