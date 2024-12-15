@@ -20,15 +20,15 @@ echo "Docker Compose démarré avec PID $DOCKER_PID"
 # Attendre que Docker Compose soit prêt
 sleep 5
 
-# Démarrer le serveur Node.js avec npm
-npm run start:dev &
+# Démarrer le serveur Node.js pour le back-end avec server.js
+node server.js &
 NODE_PID=$!
 echo "Serveur Node.js démarré avec PID $NODE_PID"
 
-# Démarrer l'application front-end avec npm
-npm start &
-NPM_PID=$!
-echo "Application npm démarrée avec PID $NPM_PID"
+# Démarrer le front-end React avec npm (npm start)
+npm run start &
+NPM_FRONT_PID=$!
+echo "Application front-end React démarrée avec PID $NPM_FRONT_PID"
 
 # Attendre que tous les processus soient terminés
 wait $DOCKER_PID $NODE_PID $NPM_PID
