@@ -66,7 +66,8 @@ Un médecin exemple à été créé :
 ```
 
 Un patient exemple à été créé :
- /!\ Par défaut le patient n'existe pas, il en créer minimu un avec le compte médecin. /!\
+
+ /!\ Par défaut le patient n'existe pas, il faut en créer minimu un avec le compte médecin. /!\
 ```
     username : patient.patient
     password : patient
