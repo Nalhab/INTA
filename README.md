@@ -60,18 +60,25 @@ Cet identifiant correnspond au patient ayant le plus ID lors du GET dans la base
 
 ## Utilisation du site
 Un médecin exemple à été créé :
+```
     username : medecin.medecin
     password : medecin
+```
 
 Un patient exemple à été créé :
+```
     username : patient.patient
     password : patient
+```
 
 Un médecin exemple à été créé :
+```
     username : secretaire.secretaire
     password : secretaire
+```
 
 Les possibilités par role :
+```
     Medecin : possede le plus de possibilite
         - Ajout, vision, modification, suppresion de fiches patient
         - Ajout, vision, modification, suppresion de rendez-vous
@@ -89,6 +96,7 @@ Les possibilités par role :
     Secretaire :
         - Vision de fiches patient
         - Vision de rendez-vous
+```
 
 Pour facilite les tests un bouton "Simulation de patient" a ete ajouté sur la page medecin, et un bouton "Simuler donnees" sur la page details patient du medecin. Ils sont en font de page. Le premier ajoute 2 patient exemple, le second ajoute 2 rendez-vous, 2 consultations et 2 prescriptions.
 
@@ -100,6 +108,10 @@ Pour commencer le développement, vous pouvez utiliser les commandes suivantes :
 ### Démarrer l'application en mode développement :
 ```sh
 npm start
+```
+l'ardresse de connexion est :
+```
+http://localhost:3000/
 ```
 
 ### Créer un bundle de production :
